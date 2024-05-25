@@ -31,7 +31,7 @@ class Failure {
 }
 
 class ApiHelper{
-  static const _baseUrl = "http://54.234.163.158:5000/";
+  static const _baseUrl = "http://54.163.48.130:5000/";
   dynamic _returnResponse(Response response) {
     switch (response.statusCode) {
       case 200:
@@ -86,6 +86,7 @@ class ApiHelper{
 
 class ApiServices{
   final  _helper = ApiHelper();
+
   Future<GetCount> getNewsData(String date) async {
     final response = await _helper.get('get_visit_count/?date=$date');
     return getCountData(response);

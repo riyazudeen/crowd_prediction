@@ -54,6 +54,7 @@ late  GetCount countData ;
    Map<String,dynamic> predictedDate = {
       "date": date
   };
+   print(predictedDate);
     var response =  await apiService.getListOfCrowd(predictedDate);
     userSelectedDate = date;
     userSelectedTime = widget.userTimeAndDate['time'];
@@ -121,10 +122,7 @@ if(widget.selectedTime.period == DayPeriod.pm){
         bcd.add(BarChartGroupData(
           x: int.parse(key),
           barRods: [BarChartRodData(
-            borderSide: const BorderSide(
-              strokeAlign: 2,
-              color: Colors.white
-            ),
+
               borderRadius: BorderRadius.zero,
               width: 10, color: Colors.blue,
               toY: double.parse(value.toString()))],
@@ -133,10 +131,11 @@ if(widget.selectedTime.period == DayPeriod.pm){
     }else{
       predictedCount!.data.forEach((key, value) {
         bcd.add(BarChartGroupData(
+          barsSpace: 200,
           x: int.parse(key),
           barRods: [BarChartRodData(
               borderRadius: BorderRadius.zero,
-              width: 5, color: Colors.blue, toY: double.parse(value.toString()))],
+              width: 10, color: Colors.blue, toY: double.parse(value.toString()))],
         ))   ;
       });
     }
@@ -151,6 +150,17 @@ if(widget.selectedTime.period == DayPeriod.pm){
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  Widget defaultGetTitle(double value, TitleMeta meta) {
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      child: Text(
+        softWrap: true,
+        style: Theme.of(context).textTheme.bodySmall,
+        meta.formattedValue,
+      ),
+    );
   }
 
   @override
@@ -261,45 +271,58 @@ if(widget.selectedTime.period == DayPeriod.pm){
                ],
              ),
            ),
-         Container(
-           margin: EdgeInsets.only(
-             right: 20.w,top: 20.h
-           ),
-           height: 300.h,
-           width: MediaQuery.of(context).size.width,
-           child:  BarChart(
-             BarChartData(
+        Container(
+          margin:  EdgeInsets.symmetric(vertical: 10.h),
+          height: 300.h,
+          width: MediaQuery.sizeOf(context).width,
+          child:   CustomScrollView(
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              slivers: <Widget>[
+                SliverToBoxAdapter(child:  SizedBox(
+                  width: selectedIndex == 0 ? MediaQuery.sizeOf(context).width :600.w,
+                  child:  BarChart(
+                    BarChartData(
+                        titlesData: FlTitlesData(
+                          rightTitles: AxisTitles(
+                            drawBelowEverything: true,
+                            axisNameWidget: Text('No of Person',style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w700
+                            )),
+                            axisNameSize: 20,
+                          ),
 
-               titlesData: FlTitlesData(
-                 rightTitles: AxisTitles(
-                   drawBelowEverything: true,
-                   axisNameWidget: Text('No of Person',style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                       fontWeight: FontWeight.w700
-                   )),
-                   axisNameSize: 20,
-                 ),
+                          topTitles: AxisTitles(
+                            drawBelowEverything: true,
+                            axisNameWidget: Text('No of hours',style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w700
+                            )),
+                            axisNameSize: 20,
+                          ),
 
-                 topTitles: AxisTitles(
-                   drawBelowEverything: true,
-                   axisNameWidget: Text('No of hours',style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                       fontWeight: FontWeight.w700
-                   )),
-                   axisNameSize: 20,
-                 ),
+                          bottomTitles:  AxisTitles(
+                              sideTitles: SideTitles(reservedSize: 30,
+                                  getTitlesWidget: defaultGetTitle,
+                                  showTitles: true)),
 
-               ),
-               alignment: BarChartAlignment.spaceEvenly,
-                 borderData: FlBorderData(
-                   border: Border(
-                     left: BorderSide(width: 1.w),
-                     bottom: BorderSide(width: 1.w),
-                   ),
-                 ),
-               //  groupsSpace: 20,
-                 barGroups: bcd
-             ),
-           ),
-         ),
+                        ),
+                        // alignment: BarChartAlignment.spaceEvenly,
+                        borderData: FlBorderData(
+                          border: Border(
+                            left: BorderSide(width: 1.w),
+                            bottom: BorderSide(width: 1.w),
+                          ),
+                        ),
+                        //  groupsSpace: 20,
+                        barGroups: bcd
+                    ),
+                  ),
+                )), //Your graph widget
+                //Reformat your list into a sliver list.
+              ]
+          ),
+        )
+       ,
 
           Container(
   margin: EdgeInsets.symmetric(
